@@ -1,0 +1,64 @@
+name: Link Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    # Every Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  link-check:
+    name: Check links in documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Lychee link checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Scan README, docs, contribution guides, and every markdown
+          # file in the repo (including submissions/**).
+          args: >-
+            --config .github/lychee.toml
+            --verbose
+            --no-progress
+            --format markdown
+            --output lychee-report.md
+            "./**/*.md"
+          fail: true
+
+      - name: Upload link check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee-report.md
+          retention-days: 30
+
+      - name: Print report to job summary
+        if: always()
+        run: |
+          if [ -f lychee-report.md ]; then
+            echo "## Link Check Report" >> "$GITHUB_STEP_SUMMARY"
+            cat lychee-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: File issue on scheduled failure
+        if: failure() && github.event_name == 'schedule'
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: 'Weekly link check found broken links'
+          content-filepath: ./lychee-report.md
+          labels: |
+            documentation
+            bug
