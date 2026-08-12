@@ -1,0 +1,215 @@
+/* ===========================================================
+   Aurora Glow Tabs
+   Pure HTML + vanilla CSS segmented tab control.
+   No JS. Radio-input driven. Hardware accelerated
+   (only `transform` + `opacity` are animated).
+   =========================================================== */
+
+:root {
+  --aurora-bg: #f4f5fb;
+  --aurora-surface: #ffffff;
+  --aurora-text: #1b1d29;
+  --aurora-text-muted: #5c6070;
+  --aurora-border: #e3e4f0;
+
+  --aurora-c1: #7f5af0;   /* violet   */
+  --aurora-c2: #2cb1ff;   /* cyan     */
+  --aurora-c3: #ff5ecb;   /* magenta  */
+
+  --aurora-tab-count: 3;
+  --aurora-radius: 14px;
+  --aurora-speed: 420ms;
+  --aurora-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --aurora-bg: #0f1017;
+    --aurora-surface: #181a24;
+    --aurora-text: #f2f2f7;
+    --aurora-text-muted: #9a9db0;
+    --aurora-border: #2a2c3a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--aurora-bg);
+  color: var(--aurora-text);
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  transition: background var(--aurora-speed) var(--aurora-ease),
+              color var(--aurora-speed) var(--aurora-ease);
+}
+
+.page { max-width: 560px; width: 100%; }
+.page h1 { margin: 0 0 6px; font-size: 1.7rem; }
+.page-sub { margin: 0 0 28px; color: var(--aurora-text-muted); }
+.page-note { margin-top: 22px; font-size: 0.85rem; color: var(--aurora-text-muted); }
+
+/* -----------------------------------------------------------
+   Component wrapper
+   ----------------------------------------------------------- */
+.aurora-tabs {
+  position: relative;
+  background: var(--aurora-surface);
+  border: 1px solid var(--aurora-border);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 12px 30px rgba(20, 20, 40, 0.08);
+}
+
+/* hide the actual radio inputs, keep them accessible-focusable via labels */
+.aurora-tabs__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* -----------------------------------------------------------
+   Tab list / segmented control
+   ----------------------------------------------------------- */
+.aurora-tabs__list {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--aurora-tab-count), 1fr);
+  gap: 4px;
+  background: var(--aurora-bg);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--aurora-radius);
+  padding: 5px;
+  isolation: isolate;
+}
+
+.aurora-tabs__tab {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--aurora-text-muted);
+  border-radius: calc(var(--aurora-radius) - 4px);
+  cursor: pointer;
+  user-select: none;
+  transform: translateZ(0);
+  transition: color var(--aurora-speed) var(--aurora-ease);
+}
+
+.aurora-tabs__tab:hover {
+  color: var(--aurora-text);
+}
+
+.aurora-tabs__tab:focus-visible {
+  outline: 2px solid var(--aurora-c2);
+  outline-offset: 2px;
+}
+
+/* the moving aurora glow indicator, layered under the active label */
+.aurora-tabs__glow {
+  position: absolute;
+  z-index: 1;
+  top: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / var(--aurora-tab-count));
+  height: calc(100% - 10px);
+  border-radius: calc(var(--aurora-radius) - 4px);
+  background: linear-gradient(120deg, var(--aurora-c1), var(--aurora-c2) 50%, var(--aurora-c3));
+  background-size: 220% 220%;
+  filter: blur(0.2px);
+  box-shadow: 0 6px 22px rgba(127, 90, 240, 0.45);
+  transform: translateX(0%);
+  transform-origin: left center;
+  will-change: transform;
+  transition: transform var(--aurora-speed) var(--aurora-ease);
+  animation: aurora-drift 6s ease-in-out infinite;
+}
+
+@keyframes aurora-drift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* move the glow + set active label color per checked radio */
+#tab-1-dg:checked ~ .aurora-tabs__list .aurora-tabs__glow { transform: translateX(0%); }
+#tab-2-dg:checked ~ .aurora-tabs__list .aurora-tabs__glow { transform: translateX(100%); }
+#tab-3-dg:checked ~ .aurora-tabs__list .aurora-tabs__glow { transform: translateX(200%); }
+
+#tab-1-dg:checked ~ .aurora-tabs__list label[for="tab-1-dg"],
+#tab-2-dg:checked ~ .aurora-tabs__list label[for="tab-2-dg"],
+#tab-3-dg:checked ~ .aurora-tabs__list label[for="tab-3-dg"] {
+  color: #ffffff;
+}
+
+/* -----------------------------------------------------------
+   Panels
+   ----------------------------------------------------------- */
+.aurora-tabs__panel {
+  display: none;
+  padding: 20px 4px 4px;
+  animation: aurora-panel-in var(--aurora-speed) var(--aurora-ease);
+}
+
+.aurora-tabs__panel h2 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.aurora-tabs__panel p,
+.aurora-tabs__panel li {
+  color: var(--aurora-text-muted);
+  line-height: 1.55;
+}
+
+#tab-1-dg:checked ~ #panel-1-dg,
+#tab-2-dg:checked ~ #panel-2-dg,
+#tab-3-dg:checked ~ #panel-3-dg {
+  display: block;
+}
+
+@keyframes aurora-panel-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* -----------------------------------------------------------
+   Accessibility: respect reduced motion
+   ----------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-tabs__glow,
+  .aurora-tabs__panel,
+  .aurora-tabs__tab,
+  body {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* -----------------------------------------------------------
+   Small screens: stack tabs vertically
+   ----------------------------------------------------------- */
+@media (max-width: 420px) {
+  .aurora-tabs__list {
+    grid-template-columns: 1fr;
+  }
+  .aurora-tabs__glow {
+    width: calc(100% - 10px);
+    height: calc((100% - 10px) / var(--aurora-tab-count));
+    transform: translateY(0%);
+  }
+  #tab-1-dg:checked ~ .aurora-tabs__list .aurora-tabs__glow { transform: translateY(0%) translateX(0); }
+  #tab-2-dg:checked ~ .aurora-tabs__list .aurora-tabs__glow { transform: translateY(100%) translateX(0); }
+  #tab-3-dg:checked ~ .aurora-tabs__list .aurora-tabs__glow { transform: translateY(200%) translateX(0); }
+}

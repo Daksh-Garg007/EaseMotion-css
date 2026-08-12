@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aurora Glow Tabs — EaseMotion CSS Demo</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="page">
+    <h1>Aurora Glow Tabs</h1>
+    <p class="page-sub">A pure CSS, accessible, hardware-accelerated segmented tab control.</p>
+
+    <div class="aurora-tabs" role="tablist" aria-label="Aurora Glow Tabs Demo">
+
+      <input type="radio" name="aurora-tabs-dg" id="tab-1-dg" class="aurora-tabs__input" checked>
+      <input type="radio" name="aurora-tabs-dg" id="tab-2-dg" class="aurora-tabs__input">
+      <input type="radio" name="aurora-tabs-dg" id="tab-3-dg" class="aurora-tabs__input">
+
+      <div class="aurora-tabs__list">
+        <label for="tab-1-dg" class="aurora-tabs__tab" role="tab" aria-selected="true" tabindex="0">
+          Overview
+        </label>
+        <label for="tab-2-dg" class="aurora-tabs__tab" role="tab" aria-selected="false" tabindex="0">
+          Features
+        </label>
+        <label for="tab-3-dg" class="aurora-tabs__tab" role="tab" aria-selected="false" tabindex="0">
+          Pricing
+        </label>
+        <div class="aurora-tabs__glow" aria-hidden="true"></div>
+      </div>
+
+      <section class="aurora-tabs__panel" id="panel-1-dg" role="tabpanel" aria-labelledby="tab-1-dg">
+        <h2>Overview</h2>
+        <p>
+          Aurora Glow is a soft, animated gradient effect inspired by the northern lights.
+          The active tab is highlighted by a blurred, moving glow that slides beneath the
+          selected label using pure CSS transforms — no JavaScript required.
+        </p>
+      </section>
+
+      <section class="aurora-tabs__panel" id="panel-2-dg" role="tabpanel" aria-labelledby="tab-2-dg">
+        <h2>Features</h2>
+        <ul>
+          <li>Pure HTML &amp; vanilla CSS — zero JS dependency</li>
+          <li>Hardware-accelerated with <code>transform</code> and <code>opacity</code> only</li>
+          <li>Dark mode compatible via <code>prefers-color-scheme</code></li>
+          <li>Keyboard accessible &amp; screen-reader friendly</li>
+          <li>Respects <code>prefers-reduced-motion</code></li>
+        </ul>
+      </section>
+
+      <section class="aurora-tabs__panel" id="panel-3-dg" role="tabpanel" aria-labelledby="tab-3-dg">
+        <h2>Pricing</h2>
+        <p>
+          Free and open source under the EaseMotion CSS framework license.
+          Drop the class names into any project and customize the aurora colors
+          with a handful of CSS custom properties.
+        </p>
+      </section>
+
+    </div>
+
+    <p class="page-note">Tip: try tabbing through with your keyboard, or toggle your OS dark mode.</p>
+  </main>
+
+</body>
+</html>
